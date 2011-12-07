@@ -1,0 +1,6 @@
+name = Etherpad Integration
+description = "Drupal WYSIWYG integration of the collaborative Etherpad Lite environment"
+dependencies[] = wysiwyg
+dependencies[] = libraries
+package = "User interface"
+core = 7.x
