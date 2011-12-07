@@ -73,9 +73,8 @@ function etherpad_etherpad_lite_themes($editor, $profile) {
 	$js = $editor['library path'] . '/js/etherpad.js';
 	drupal_add_js($js);	
 
-//	$ether_mod = drupal_get_path("module", "etherpad");
-//	drupal_add_css($ether_mod."/css/etherpad.css", array("absolute"=>true));
-//	$js = $ether_mod."/etherpad-lite-jquery-plugin/js/etherpad.js";
+	$ether_mod = drupal_get_path("module", "etherpad");
+	drupal_add_css($ether_mod."/css/etherpad.css", array("absolute"=>true));
 	/**
 	 * TODO: just a STUB 
 	 */
