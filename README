@@ -14,6 +14,9 @@ drush en etherpad
 
  * go to configuration of your drupal installation (?q=admin/config/content/etherpad-lite)
  * check that the etherpad http url is correct
+   Note: make sure that for production websites you should use a URL like 
+   http://mysite.com:9001 rather than http://localhost. Otherwise you'll get
+   "You do not have permission to access this pad".
  * paste the APIKEY.TXT of your etherpad installation into the Etherpad API field
  * click test to see if connection could be established (should show a big green success)
  * then save configuration
