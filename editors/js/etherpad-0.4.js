@@ -8,7 +8,7 @@ Drupal.wysiwyg.editor.init.etherpad_lite = function(settings) {
 function getPadContents(padid, callback, async) {
     if (typeof(async)=="undefined")
 	async = true;
-    url = Drupal.settings.basePath+"localedit/get/";
+    url = Drupal.settings.basePath+"?q=localedit/get/";
     data = {
 	"padid": padid 
     };
@@ -26,7 +26,7 @@ function getPadContents(padid, callback, async) {
 }
 
 function setPadContents(padid, nid, content) {
-    url = Drupal.settings.basePath+"localedit/set/"+nid;
+    url = Drupal.settings.basePath+"?q=localedit/set/"+nid;
     data = {
 	"padid": padid,
 	"content": content,
@@ -63,7 +63,7 @@ Drupal.wysiwyg.editor.attach.etherpad_lite = function(context, params, settings)
 			});
 	  if (typeof(nid)!="undefined" && nid.length>0) {
 	          getPadContents(padid, function(txt) {
-			if (txt.length==1) {
+		      if (txt.length==1) {
 			    setPadContents(padid, nid, $(editorid).val());
 			}			
 		  });
