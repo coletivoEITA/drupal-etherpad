@@ -42,7 +42,7 @@ function etherpad_enrich_form(&$form, &$form_state) {
 	$validUntil = mktime(0, 0, 0, date("m"), date("d")+1, date("y")); // One day in the future
 
 	$sessionID = $client->createSession($egid, $author, $validUntil)->sessionID;
-	setcookie("sessionID", $sessionID, $validUntil, "/"); // Set a cookie
+	setcookie("sessionID", $sessionID, $validUntil, "/", ".".$_SERVER['HTTP_HOST']); // Set a cookie
 	
 	$form["etherpad_gid"] = array(
 				"#type" => "hidden",
