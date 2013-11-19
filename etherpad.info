@@ -4,3 +4,4 @@ dependencies[] = wysiwyg
 dependencies[] = libraries
 package = "User interface"
 core = 7.x
+configure = admin/config/content/etherpad-lite

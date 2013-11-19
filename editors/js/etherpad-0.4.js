@@ -3,72 +3,62 @@
 Drupal.wysiwyg.editor.init.etherpad_lite = function(settings) {
 
 }
-	
 
 function getPadContents(padid, callback, async) {
-    if (typeof(async)=="undefined")
-	async = true;
-    url = Drupal.settings.basePath+"?q=localedit/get/";
-    data = {
-	"padid": padid 
-    };
-    var _call = callback;
-    $.ajax({
-	       "url":url,
-	       "type":"POST",
-	       "data":data,
-	       "async":async,
-	       "dataType":"json",
-	       "success" : function(data) {
-		   _call(data.content);
-	       }
-	   });
+  if (typeof(async) == 'undefined')
+    async = true;
+  var _call = callback;
+  $.ajax({
+    'url': Drupal.settings.basePath + 'etherpad/get/',
+    'type': 'POST',
+    'data': {'padid': padid},
+    'async': async,
+    'dataType': 'json',
+    'success' : function(data) {
+      _call(data.content);
+    }
+  });
 }
 
 function setPadContents(padid, nid, content) {
-    url = Drupal.settings.basePath+"?q=localedit/set/"+nid;
-    data = {
-	"padid": padid,
-	"content": content,
-    };
-    $.ajax({
-	       "url":url,
-	       "type":"POST",
-	       "data":data,
-	       "dataType":"json",
-	       "success" : function(data) {
-	       }
-	   });
+  $.ajax({
+    'url': Drupal.settings.basePath + 'etherpad/set/' + nid,
+    'type': 'POST',
+    'data': {'padid': padid, 'content': content},
+    'dataType': 'json',
+    'success' : function(data) {
+    }
+  });
 }
 
 /**
  * Attach this editor to a target element.
  */
 Drupal.wysiwyg.editor.attach.etherpad_lite = function(context, params, settings) {
-  editorid = "#"+params.field;
-  newID = params.field+"-editor";
-  $(editorid).after($("<div>").attr("id", params.field+"-editor").attr("class","pad"));
+  editorid = '#' + params.field;
+  newID = params.field + '-editor';
+  $(editorid).after($('<div>').attr('id', params.field + '-editor').attr('class', 'pad'));
   obj = $(editorid).next();
-  egid = $("#etherpad_gid").val();
-  nid = $("#etherpad_nid").val();
-  padid =  egid+"$"+params.field;
-  if (typeof(egid) != "undefined") {
-	  $(obj).pad({
-			'padId': padid,
-			'host':settings.host, 
-			'showChat':'true', 
-			'showControls':'true',
-			 'showLineNumbers'  : true,
-			 'userName'	 : settings.user,
-			});
-	  if (typeof(nid)!="undefined" && nid.length>0) {
-	          getPadContents(padid, function(txt) {
-		      if (txt.length==1) {
-			    setPadContents(padid, nid, $(editorid).val());
-			}			
-		  });
-	  }
-	  $(editorid).hide(); 
+  egid = $('#etherpad_gid').val();
+  nid = $('#etherpad_nid').val();
+  padid =  egid + '$' + params.field;
+  if (typeof(egid) != 'undefined') {
+    $(obj).pad({
+      'padId': padid,
+      'host': settings.host,
+      'showChat': 'true',
+      'showControls': 'true',
+      'showLineNumbers': true,
+      'userName': settings.user
+    });
+    if (typeof(nid) != 'undefined' && nid.length>0) {
+      getPadContents(padid, function(txt) {
+        if (txt.length==1) {
+          setPadContents(padid, nid, $(editorid).val());
+        }
+      });
+    }
+    $(editorid).hide();
   }
 };
 
@@ -78,14 +68,14 @@ Drupal.wysiwyg.editor.attach.etherpad_lite = function(context, params, settings)
  * See Drupal.wysiwyg.editor.detach.none() for a full desciption of this hook.
  */
 Drupal.wysiwyg.editor.detach.etherpad_lite = function(context, params) {
-  egid = $("#etherpad_gid").val();
-  padid =  egid+"$"+params.field;
-  editorid = "#"+params.field;
-  newID = editorid+"-editor";
+  egid = $('#etherpad_gid').val();
+  padid =  egid + '$' + params.field;
+  editorid = '#' + params.field;
+  newID = editorid + '-editor';
   getPadContents(padid, function(content) {
-	$(editorid).val(content);
-	$(newID).hide();
-	$(editorid).show();
+    $(editorid).val(content);
+    $(newID).hide();
+    $(editorid).show();
   }, false);
 };
 

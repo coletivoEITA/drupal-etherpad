@@ -8,7 +8,7 @@ cd sites/all
 mkdir -p libraries
 cd libraries
 git clone git://github.com/TomNomNom/etherpad-lite-client.git
-git clone git://github.com/johnyma22/etherpad-lite-jquery-plugin.git
+git clone git://github.com/ether/etherpad-lite-jquery-plugin.git
 drush dl etherpad wysiwyg libraries
 drush en etherpad
 
