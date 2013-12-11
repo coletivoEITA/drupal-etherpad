@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_editor().
+ * Implements hook_editor().
  */
 function etherpad_etherpad_lite_editor() {
   $editor['etherpad_lite'] = array(
@@ -109,10 +109,8 @@ function etherpad_etherpad_lite_settings($editor, $config, $theme) {
   global $user;
 
   $settings = array();
-
   $settings['jspath'] = url('<front>') . $editor['library path'];
-  $settings['host'] = variable_get('etherpad_base_url');
-
+  $settings['host'] = variable_get('etherpad_base_url', 'http://localhost:9001');
   $settings['user'] = isset($user->name) ? $user->name : 'anonymous';
 
   return $settings;

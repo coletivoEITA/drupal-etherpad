@@ -8,20 +8,21 @@
 /**
  * Form builder for administrative settings.
  */
-function etherpad_config_form($form, &$form_state) {
+function etherpad_settings_form($form, &$form_state) {
   $form['etherpad_base_url'] = array(
     '#type' => 'textfield',
-    '#title' => 'Etherpad API URL',
+    '#title' => t('Etherpad API URL'),
     '#default_value' => variable_get('etherpad_base_url', 'http://localhost:9001'),
   );
   $form['etherpad_api_key'] = array(
     '#type' => 'textfield',
-    '#title' => 'Etherpad API Key',
-    '#default_value' => variable_get('etherpad_api_key', 'PASTE CONTENTS OF APIKEY.TXT'),
+    '#title' => t('Etherpad API Key'),
+    '#descrition' => t('Paste contents of APIKEY.TXT file.'),
+    '#default_value' => variable_get('etherpad_api_key', ''),
   );
   $form['test'] = array(
     '#type' => 'button',
-    '#default_value' => 'Test',
+    '#value' => t('Test'),
     '#ajax' => array(
       'callback' => 'etherpad_lite_test_connection',
       'wrapper' => 'result_div',
@@ -60,4 +61,3 @@ function etherpad_lite_test_connection($form, $form_state) {
   }
   return $form['test_result'];
 }
-

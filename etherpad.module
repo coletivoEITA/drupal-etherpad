@@ -11,21 +11,21 @@
 function etherpad_menu() {
   $items['etherpad/get'] = array(
     'page callback' => 'etherpad_getContent',
-    'type' => MENU_CALLBACK,
     'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
   );
   $items['etherpad/set/%node'] = array(
     'page callback' => 'etherpad_setContent',
-    'type' => MENU_CALLBACK,
     'access callback' => 'node_access',
     'access arguments' => array('update', 2),
+    'type' => MENU_CALLBACK,
   );
   $items['admin/config/content/etherpad-lite'] = array (
-    'title' => 'Etherpad-Lite configurations',
-    'description' => 'Default configuration to be used by all etherpad fields',
+    'title' => 'Etherpad-Lite',
+    'description' => 'Default configuration to be used by all etherpad fields.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('etherpad_config_form'),
-    'access arguments' => array('access administration pages'),
+    'page arguments' => array('etherpad_settings_form'),
+    'access arguments' => array('administer site configuration'),
     'file' => 'etherpad.admin.inc',
   );
   $items['etherpad/%node/%'] = array(
@@ -96,7 +96,7 @@ function etherpad_get_client() {
   $path = libraries_get_path('etherpad-lite-client');
   if ($path) {
     require_once($path . '/etherpad-lite-client.php');
-    return new EtherpadLiteClient(variable_get('etherpad_api_key'), variable_get('etherpad_base_url') . '/api');
+    return new EtherpadLiteClient(variable_get('etherpad_api_key', ''), variable_get('etherpad_base_url', 'http://localhost:9001') . '/api');
   }
   watchdog('etherpad', 'Etherpad light client library not found.', array(), WATCHDOG_ERROR);
 }
