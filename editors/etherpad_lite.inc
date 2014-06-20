@@ -6,13 +6,13 @@
  */
 
 /**
- * Implements hook_editor().
+ * Implements hook_INCLUDE_editor().
  */
 function etherpad_etherpad_lite_editor() {
   $editor['etherpad_lite'] = array(
     'title' => 'Etherpad lite editor',
     'vendor url' => 'https://github.com/ether/etherpad-lite-jquery-plugin',
-    'download url' => 'git clone https://github.com/ether/etherpad-lite-jquery-plugin.git',
+    'download url' => 'https://github.com/ether/etherpad-lite-jquery-plugin/releases',
     'library path' => wysiwyg_get_path('etherpad-lite-jquery-plugin'),
     'libraries' => array(
       'src' => array(
