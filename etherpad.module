@@ -1,8 +1,8 @@
 <?php
-
 /**
  * @file
- * Module file for Etherpad.
+ * Etherpad Lite integration.
+ * @see https://github.com/ether/etherpad-lite
  */
 
 /**
@@ -34,8 +34,21 @@ function etherpad_menu() {
     'access callback' => 'etherpad_access_edit',
     'access arguments' => array(1, 2),
     'type' => MENU_CALLBACK,
+    'file' => 'etherpad.pages.inc',
   );
   return $items;
+}
+
+/**
+ * Access callback for node body etherpad.
+ */
+function etherpad_access_edit($node, $field_name) {
+  if ($field_instance = field_info_instance('node', $field_name, $node->type)) {
+    // Check access to edit field.
+    //$field = field_info_field_by_id($field_instance['field_id']);
+    return node_access('update', $node); // @todo && field_access('edit', $field, 'node', $node);
+  }
+  return FALSE;
 }
 
 /**
@@ -78,6 +91,42 @@ function etherpad_field_formatter_view($entity_type, $entity, $field, $instance,
 }
 
 /**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function etherpad_form_node_form_alter(&$form, &$form_state, $form_id) {
+  if (isset($form['#entity_type']) && $form['#entity_type'] == 'node') {
+    etherpad_enrich_form($form, $form_state);
+  }
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function etherpad_node_presave($node) {
+  if (property_exists($node, 'etherpad_gid') && !empty($node->nid)) {
+    $old_egid = etherpad_get_egid($node->nid);
+    if (!isset($old_egid) || strlen($old_egid) == 0) {
+      db_insert('etherpad_node')->fields(array('nid'=> $node->nid, 'egid' => $node->etherpad_gid))->execute();
+    }
+    elseif ($old_egid != $node->etherpad_gid) {
+      db_update('etherpad_node')->fields(array('egid' => $node->etherpad_gid))->condition('nid',$node->nid)->execute();
+    }
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function etherpad_theme($existing, $type, $theme, $path) {
+  return array(
+    'etherpad_local' => array(
+      'render element' => 'element',
+      'template' => 'etherpad_local',
+    ),
+  );
+}
+
+/**
  * Implements hook_wysiwyg_include_directory().
  */
 function etherpad_wysiwyg_include_directory($type) {
@@ -99,6 +148,17 @@ function etherpad_get_client() {
     return new EtherpadLiteClient(variable_get('etherpad_api_key', ''), variable_get('etherpad_base_url', 'http://localhost:9001') . '/api');
   }
   watchdog('etherpad', 'Etherpad light client library not found.', array(), WATCHDOG_ERROR);
+}
+
+/**
+ * Fetch the etherpad group name associated with node.
+ *
+ * @param $nid
+ *   Node ID.
+ * @return string|FALSE
+ */
+function etherpad_get_egid($nid) {
+  return db_query('SELECT egid FROM {etherpad_node} WHERE nid = :nid', array(':nid' => $nid))->fetchField();
 }
 
 /**
@@ -150,41 +210,6 @@ function etherpad_enrich_form(&$form, &$form_state) {
   }
   catch (Exception $e) {
     watchdog('etherpad', $e->getMessage(), array(), WATCHDOG_ERROR);
-  }
-}
-
-/**
- * Implements hook_form_BASE_FORM_ID_alter().
- */
-function etherpad_form_node_form_alter(&$form, &$form_state, $form_id) {
-  if (isset($form['#entity_type']) && $form['#entity_type'] == 'node') {
-    etherpad_enrich_form($form, $form_state);
-  }
-}
-
-/**
- * Fetch the etherpad group name associated with node.
- *
- * @param $nid
- *   Node ID.
- * @return string|FALSE
- */
-function etherpad_get_egid($nid) {
-  return db_query('SELECT egid FROM {etherpad_node} WHERE nid = :nid', array(':nid' => $nid))->fetchField();
-}
-
-/**
- * Implements hook_node_presave().
- */
-function etherpad_node_presave($node) {
-  if (property_exists($node, 'etherpad_gid') && !empty($node->nid)) {
-    $old_egid = etherpad_get_egid($node->nid);
-    if (!isset($old_egid) || strlen($old_egid) == 0) {
-      db_insert('etherpad_node')->fields(array('nid'=> $node->nid, 'egid' => $node->etherpad_gid))->execute();
-    }
-    elseif ($old_egid != $node->etherpad_gid) {
-      db_update('etherpad_node')->fields(array('egid' => $node->etherpad_gid))->condition('nid',$node->nid)->execute();
-    }
   }
 }
 
@@ -248,56 +273,4 @@ function etherpad_setContent() {
   }
 
   echo json_encode(array('status' => 'ok'));
-}
-
-
-/**
- * Access callback for node body etherpad.
- */
-function etherpad_access_edit($node, $field_name) {
-  if ($field_instance = field_info_instance('node', $field_name, $node->type)) {
-    // Check access to edit field.
-    //$field = field_info_field_by_id($field_instance['field_id']);
-    return node_access('update', $node); // @todo && field_access('edit', $field, 'node', $node);
-  }
-  return FALSE;
-}
-
-/**
- * Form builder for field edit.
- */
-function etherpad_edit_form($form, &$form_state, $node, $field) {
-  $field_form = array();
-  field_attach_form('node', $node, $field_form, $form_state);
-  $form[$field] = $field_form[$field];
-  $form['#node'] = $node;
-  $form['#field'] = $field;
-
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => 'Save',
-  );
-  // Create group, user and start session.
-  etherpad_enrich_form($form, $form_state);
-  return $form;
-}
-
-function etherpad_edit_form_submit($form, &$form_state) {
-  $field_name = $form['#field'];
-  $node = &$form['#node'];
-  $langcode = field_language('node', $node, $field_name);
-  $node->{$field_name}[$langcode][0]['value'] = $form_state['values'][$field_name][$langcode]['0']['value'];
-  node_save($node);
-}
-
-/**
- * Implements hook_theme().
- */
-function etherpad_theme($existing, $type, $theme, $path) {
-  return array(
-    'etherpad_local' => array(
-      'render element' => 'element',
-      'template' => 'etherpad_local',
-    ),
-  );
 }

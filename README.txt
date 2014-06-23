@@ -1,4 +1,4 @@
-This is module integrates Etherpad Lite into Drupal 7 WYSIWYG module.
+This module integrates Etherpad Lite into Drupal 7 WYSIWYG module.
 
 = Installation instructions =
  * change directory to the root of the drupal installation containing

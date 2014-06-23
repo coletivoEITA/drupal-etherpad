@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Administrative settings for Etherpad module.

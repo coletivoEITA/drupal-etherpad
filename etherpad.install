@@ -1,5 +1,4 @@
-<?php 
-
+<?php
 /**
  * @file
  * Install, uninstall, and update functions for etherpad.module.
@@ -11,7 +10,7 @@
  * etherpad001 ID before he can edit anything. The whole user-based
  * authentication takes place on drupal level and only authenticated
  * users can get as far as getting the ID of the group id and hence
- * get read or readwrite access to it.    
+ * get read or readwrite access to it.
  */
 
 /**
@@ -59,11 +58,11 @@ function etherpad_requirements($phase) {
  */
 function etherpad_schema() {
   $schema['etherpad_node'] = array(
-    'description' => 'Maps nodes to etherpad groups.', 
+    'description' => 'Maps nodes to etherpad groups.',
     'fields' => array(
       'nid' => array(
         'type' => 'int',
-        'description' => 'The primary identifier for a node.', 
+        'description' => 'The primary identifier for a node.',
         'unsigned' => TRUE,
       ),
       'egid' => array(
